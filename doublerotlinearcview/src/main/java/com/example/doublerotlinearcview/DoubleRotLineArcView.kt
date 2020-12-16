@@ -41,15 +41,15 @@ fun Canvas.drawDoubleRotLineArc(scale : Float, w : Float, h : Float, paint : Pai
     translate(w / 2, h / 2)
     for (j in 0..1) {
         save()
-        save()
         scale(1f - 2 * j, 1f)
+        save()
         rotate(deg * sf.divideScale(1, parts) - arcDeg * sf.divideScale(2, parts))
         drawLine(0f, 0f, 0f, -size * sf.divideScale(0, parts), paint)
         restore()
         drawArc(
             RectF(-r, -r, r, r),
-            -arcDeg * sf.divideScale(3, parts),
-            arcDeg * sf.divideScale(3, parts),
+            -arcDeg * sf.divideScale(2, parts),
+            arcDeg * sf.divideScale(2, parts),
             true,
             paint
         )
