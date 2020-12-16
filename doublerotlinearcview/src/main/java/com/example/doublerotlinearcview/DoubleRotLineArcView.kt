@@ -193,4 +193,27 @@ class DoubleRotLineArcView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : DoubleRotLineArcView) {
+
+        private val animator : Animator = Animator(view)
+        private val drl : DoubleRotLineArc = DoubleRotLineArc(0)
+        private val paint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+        fun render(canvas : Canvas) {
+            canvas.drawColor(backColor)
+            drl.draw(canvas, paint)
+            animator.animate {
+                drl.update {
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            drl.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
