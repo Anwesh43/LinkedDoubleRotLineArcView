@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Paint
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.RectF
 
 val parts : Int = 4
 val scGap : Float = 0.02f / parts
@@ -25,8 +26,43 @@ val colors : Array<Int> = arrayOf(
 }.toTypedArray()
 val deg : Float = 90f
 val arcDeg : Float = 45f
+val rSizeFactor : Float = 12.2f
 
 fun Int.inverse() : Float = 1f / this
 fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse())
 fun Float.divideScale(i : Int, n : Int)  : Float = Math.min(n.inverse(), maxScale(i, n)) * n
 fun Float.sinify() : Float = Math.sin(this * Math.PI).toFloat()
+
+fun Canvas.drawDoubleRotLineArc(scale : Float, w : Float, h : Float, paint : Paint) {
+    val sf : Float = scale.sinify()
+    val r : Float = Math.min(w, h) / rSizeFactor
+    val size : Float = Math.min(w, h) / sizeFactor
+    save()
+    translate(w / 2, h / 2)
+    for (j in 0..1) {
+        save()
+        save()
+        scale(1f - 2 * j, 1f)
+        rotate(deg * sf.divideScale(1, parts) - arcDeg * sf.divideScale(2, parts))
+        drawLine(0f, 0f, 0f, -size * sf.divideScale(0, parts), paint)
+        restore()
+        drawArc(
+            RectF(-r, -r, r, r),
+            -arcDeg * sf.divideScale(3, parts),
+            arcDeg * sf.divideScale(3, parts),
+            true,
+            paint
+        )
+        restore()
+    }
+    restore()
+}
+
+fun Canvas.drawDRLNode(i : Int, scale : Float, paint : Paint) {
+    val w : Float = width.toFloat()
+    val h : Float = height.toFloat()
+    paint.color = colors[i]
+    paint.strokeCap = Paint.Cap.ROUND
+    paint.strokeWidth = Math.min(w, h) / strokeFactor
+    drawDoubleRotLineArc(scale, w, h, paint)
+}
